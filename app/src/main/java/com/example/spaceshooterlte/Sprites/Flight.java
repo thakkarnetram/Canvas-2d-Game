@@ -1,21 +1,24 @@
-package com.example.spaceshooterlte;
+package com.example.spaceshooterlte.Sprites;
 
-import static com.example.spaceshooterlte.GameView.screenRatioX;
-import static com.example.spaceshooterlte.GameView.screenRatioY;
+import static com.example.spaceshooterlte.View.GameView.screenRatioX;
+import static com.example.spaceshooterlte.View.GameView.screenRatioY;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
+import com.example.spaceshooterlte.View.GameView;
+import com.example.spaceshooterlte.R;
+
 public class Flight {
     public int toShoot;
-    Boolean isGoingUp = false;
-    int x, y, width, height, wingCounter = 0, shootCounter = 1;
-    Bitmap flight1, flight2, shoot1, shoot2, shoot3, shoot4, shoot5, deadFlight;
+    public Boolean isGoingUp = false;
+    public int x, y, width, height, wingCounter = 0, shootCounter = 1;
+    public Bitmap flight1, flight2, shoot1, shoot2, shoot3, shoot4, shoot5, deadFlight;
     private GameView gameView;
 
-    Flight(GameView gameView, int screenY, Resources resources) {
+    public Flight(GameView gameView, int screenY, Resources resources) {
         // gameView ref
         this.gameView = gameView;
         // Inserting the images into the Bitmap
@@ -61,7 +64,7 @@ public class Flight {
         x = (int) (64 * screenRatioX);
     }
 
-    Bitmap getFlight() {
+    public Bitmap getFlight() {
 
         // shooting logic
         if (toShoot != 0) {
@@ -99,12 +102,12 @@ public class Flight {
     }
 
     // Collision detection
-    Rect getCollisionBounds() {
+    public Rect getCollisionBounds() {
         return new Rect(x, y, x + width, y + height);
     }
 
     // Get the DeadFlight
-    Bitmap getDeadFlight() {
+    public Bitmap getDeadFlight() {
         return deadFlight;
     }
 }

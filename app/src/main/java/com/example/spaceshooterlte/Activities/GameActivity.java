@@ -1,11 +1,13 @@
-package com.example.spaceshooterlte;
+package com.example.spaceshooterlte.Activities;
 
-import android.graphics.Point;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.spaceshooterlte.Constants.AppConstants;
+import com.example.spaceshooterlte.View.GameView;
 
 public class GameActivity extends AppCompatActivity {
     GameView gameView;

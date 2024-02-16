@@ -5,31 +5,116 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    tools:context=".MainActivity">
+    tools:context=".Activities.MainActivity">
+
+    <ImageButton
+        android:id="@+id/ibExitBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/_120sdp"
+        android:layout_marginBottom="@dimen/_240sdp"
+        android:background="@drawable/exit"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tvPlayGame"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvPlayGame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Space Shooter"
+        android:hint="Bird Shooter"
         android:textColorHint="@color/black"
         android:textSize="@dimen/_20sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/ltModes"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <com.nex3z.togglebuttongroup.SingleSelectToggleGroup
+        android:id="@+id/ltModes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/_120sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/tvPlayGame"
+        app:layout_constraintStart_toStartOf="@+id/tvPlayGame"
+        app:layout_constraintTop_toBottomOf="@+id/tvPlayGame">
+
+
+        <com.nex3z.togglebuttongroup.button.LabelToggle
+            android:id="@+id/ltToggleNormal"
+            android:layout_width="@dimen/_100sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:text="Normal Mode"
+            android:textSize="@dimen/_12sdp" />
+
+        <com.nex3z.togglebuttongroup.button.LabelToggle
+            android:id="@+id/ltToggleEndless"
+            android:layout_width="@dimen/_100sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:text="Endless Mode"
+            android:textSize="@dimen/_12sdp"
+
+            />
+
+    </com.nex3z.togglebuttongroup.SingleSelectToggleGroup>
+
+
+    <com.nex3z.togglebuttongroup.SingleSelectToggleGroup
+        android:id="@+id/ltSessionSetting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/_30sdp"
+        app:layout_constraintBottom_toTopOf="@+id/btnStart"
+        app:layout_constraintEnd_toEndOf="@+id/ltModes"
+        app:layout_constraintStart_toStartOf="@+id/ltModes"
+        app:layout_constraintTop_toBottomOf="@+id/ltModes">
+
+
+        <com.nex3z.togglebuttongroup.button.LabelToggle
+            android:id="@+id/ltLevel1"
+            android:layout_width="@dimen/_80sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_marginRight="@dimen/_5sdp"
+            android:text="Level 1 "
+            android:textSize="@dimen/_12sdp" />
+
+        <com.nex3z.togglebuttongroup.button.LabelToggle
+            android:id="@+id/ltLevel2"
+            android:layout_width="@dimen/_80sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_marginRight="@dimen/_5sdp"
+            android:text="Level 2"
+            android:textSize="@dimen/_12sdp"
+
+            />
+
+        <com.nex3z.togglebuttongroup.button.LabelToggle
+            android:id="@+id/ltLevel3"
+            android:layout_width="@dimen/_80sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:text="Level 3"
+            android:textSize="@dimen/_12sdp"
+
+            />
+
+    </com.nex3z.togglebuttongroup.SingleSelectToggleGroup>
+
     <Button
-        android:id="@+id/btnPlay"
+        android:id="@+id/btnStart"
         android:layout_width="@dimen/_100sdp"
         android:layout_height="@dimen/_30sdp"
-        android:layout_marginBottom="@dimen/_80sdp"
+        android:layout_marginTop="@dimen/_50sdp"
         android:backgroundTint="@color/black"
-        android:hint="Play"
-        android:textSize="@dimen/_14sdp"
-        android:textColorHint="@color/white"
+        android:text="Play"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_12sdp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvPlayGame" />
+        app:layout_constraintEnd_toEndOf="@+id/ltModes"
+        app:layout_constraintStart_toStartOf="@+id/ltModes"
+        app:layout_constraintTop_toBottomOf="@+id/ltModes" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

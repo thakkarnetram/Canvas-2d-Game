@@ -1,20 +1,22 @@
-package com.example.spaceshooterlte;
+package com.example.spaceshooterlte.Sprites;
 
-import static com.example.spaceshooterlte.GameView.screenRatioX;
-import static com.example.spaceshooterlte.GameView.screenRatioY;
+import static com.example.spaceshooterlte.View.GameView.screenRatioX;
+import static com.example.spaceshooterlte.View.GameView.screenRatioY;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
+import com.example.spaceshooterlte.R;
+
 public class EnemyBird {
     public int birdSpeed = 20;
-    int x = 0, y, width, height, birdCounter = 1;
+    public int x = 0, y, width, height, birdCounter = 1;
     public boolean birdShot = true;
-    Bitmap bird1, bird2, bird3, bird4;
+    public Bitmap bird1, bird2, bird3, bird4;
 
-    EnemyBird(Resources resources) {
+    public EnemyBird(Resources resources) {
         bird1 = BitmapFactory.decodeResource(resources, R.drawable.bird1);
         bird2 = BitmapFactory.decodeResource(resources, R.drawable.bird2);
         bird3 = BitmapFactory.decodeResource(resources, R.drawable.bird3);
@@ -38,7 +40,7 @@ public class EnemyBird {
         y = -height;
     }
 
-    Bitmap getBird() {
+    public Bitmap getBird() {
         if (birdCounter == 1) {
             birdCounter++;
             return bird1;
@@ -56,7 +58,7 @@ public class EnemyBird {
     }
 
     // Rect method to detect collision
-    Rect getCollisionBounds() {
+    public Rect getCollisionBounds() {
         return new Rect(x, y, x + width, y + height);
     }
 }

@@ -1,38 +1,70 @@
-package com.example.spaceshooterlte;
+package com.example.spaceshooterlte.Activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
+import com.example.spaceshooterlte.Constants.AppConstants;
+import com.example.spaceshooterlte.R;
 
-    Button btnPlay;
+public class GameOver extends AppCompatActivity {
+
+    Button btnRestartGame, btnStart;
+    TextView tvHighScore;
+
+    ImageButton ibHomeBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         hideSystemUI();
-        setContentView(R.layout.activity_main);
-        AppConstants.initialization(this.getApplicationContext());
-        playGame();
+        setContentView(R.layout.activity_game_over);
+        restartGame();
+        setHighScore();
+        returnHome();
     }
 
-    private void playGame() {
-        btnPlay = (Button) findViewById(R.id.btnPlay);
-        btnPlay.setOnClickListener(new View.OnClickListener() {
+    private void setHighScore() {
+        tvHighScore = (TextView) findViewById(R.id.tvHighScore);
+        final SharedPreferences sharedPreferences = getSharedPreferences("game", MODE_PRIVATE);
+        tvHighScore.setText("HighScore : " + sharedPreferences.getInt("score", 0));
+    }
+
+    private void restartGame() {
+        btnRestartGame = (Button) findViewById(R.id.btnRestart);
+        btnRestartGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, GameActivity.class);
+                Intent intent = new Intent(GameOver.this, GameActivity.class);
                 startActivity(intent);
                 finish();
             }
         });
     }
+
+    private void returnHome() {
+        ibHomeBtn = (ImageButton) findViewById(R.id.ibHomeBtn);
+        btnStart = (Button) findViewById(R.id.btnStart);
+        ibHomeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(GameOver.this, MainActivity.class);
+                startActivity(intent);
+                AppConstants.EXITED = 1;
+                AppConstants.IS_LEVEL_SELECTED = false;
+                finish();
+            }
+        });
+    }
+
 
     @Override
     protected void onResume() {

@@ -1,4 +1,4 @@
-package com.example.spaceshooterlte;
+package com.example.spaceshooterlte.View;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,8 +11,17 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
+
+import com.example.spaceshooterlte.Activities.GameOver;
+import com.example.spaceshooterlte.Constants.AppConstants;
+import com.example.spaceshooterlte.R;
+import com.example.spaceshooterlte.Sprites.Background;
+import com.example.spaceshooterlte.Sprites.Bullet;
+import com.example.spaceshooterlte.Sprites.EnemyBird;
+import com.example.spaceshooterlte.Sprites.Flight;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +46,7 @@ public class GameView extends SurfaceView implements Runnable {
     private int sound;
     SharedPreferences sharedPreferences;
     private int flightPointerId = -1;
+
 
     public GameView(Context context, int screenX, int screenY) {
         super(context);
@@ -103,8 +113,16 @@ public class GameView extends SurfaceView implements Runnable {
 
     private void update() {
         // -= to move the background towards the left
-        background1.x -= 15 * screenRatioX;
-        background2.x -= 15 * screenRatioX;
+        if (AppConstants.GAME_LEVEL == 1) {
+            background1.x -= 10 * screenRatioX;
+            background2.x -= 10 * screenRatioX;
+        } else if (AppConstants.GAME_LEVEL == 2) {
+            background1.x -= 20 * screenRatioX;
+            background2.x -= 20 * screenRatioX;
+        } else if (AppConstants.GAME_LEVEL == 3) {
+            background1.x -= 30 * screenRatioX;
+            background2.x -= 30 * screenRatioX;
+        }
 
         // width < 0 means if the background is completely off the screen
         // we need to reset it to normal position
@@ -141,14 +159,26 @@ public class GameView extends SurfaceView implements Runnable {
                 trashList.add(bullet);
             }
             // bullet moving speed on X axis ( multiplying with RatioX in order to make it compatible )
-            bullet.x += 150 * screenRatioX;
+            if (AppConstants.GAME_LEVEL == 1) {
+                bullet.x += 150 * screenRatioX;
+            } else if (AppConstants.GAME_LEVEL == 2) {
+                bullet.x += 250 * screenRatioX;
+            } else if (AppConstants.GAME_LEVEL == 3) {
+                bullet.x += 350 * screenRatioX;
+            }
 
             // checking if the Bullets hit the Enemy Bird
             for (EnemyBird bird : enemyBird) {
                 // if bullets hit the Bird ( bird would be Dead & score would increase )
                 if (Rect.intersects(bird.getCollisionBounds(), bullet.getCollisionBounds())) {
                     // increase the score
-                    score += 1;
+                    if (AppConstants.GAME_LEVEL == 1) {
+                        score += 1;
+                    } else if (AppConstants.GAME_LEVEL == 2) {
+                        score += 2;
+                    } else if (AppConstants.GAME_LEVEL == 3) {
+                        score += 3;
+                    }
                     // if they collide Set the bird position of the screen
                     // and also when the Bird goes of the screen it re-spawns again
                     bird.x = -500;
@@ -177,13 +207,21 @@ public class GameView extends SurfaceView implements Runnable {
 
                 if (!bird.birdShot) {
                     // bird was not shot and still off the screen
-                    isGameOver = true;
+                    isGameOver = false;
                     return;
                 }
 
                 // increase the speed of bird so next time it goes more faster
-                int bound = (int) (30 * screenRatioX);
-                bird.birdSpeed = random.nextInt(bound);
+                if (AppConstants.GAME_LEVEL == 1) {
+                    int bound = (int) (20 * screenRatioX);
+                    bird.birdSpeed = random.nextInt(bound);
+                } else if (AppConstants.GAME_LEVEL == 2) {
+                    int bound = (int) (30 * screenRatioX);
+                    bird.birdSpeed = random.nextInt(bound);
+                } else if (AppConstants.GAME_LEVEL == 3) {
+                    int bound = (int) (40 * screenRatioX);
+                    bird.birdSpeed = random.nextInt(bound);
+                }
 
                 // as we are taking random values , edge case might be where it returns 0
                 if (bird.birdSpeed < 10 * screenRatioX) {
@@ -338,7 +376,7 @@ public class GameView extends SurfaceView implements Runnable {
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_POINTER_UP:
                     // pointer that went up corresponds to the left side touch, stop going up and down
-                    if (pointerId == flightPointerId && isPointerActive) {
+                    if (pointerId == flightPointerId) {
                         flight.isGoingUp = false;
                         flightPointerId = -1;
                     }
