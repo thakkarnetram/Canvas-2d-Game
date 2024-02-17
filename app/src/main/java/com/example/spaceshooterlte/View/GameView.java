@@ -11,7 +11,6 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
@@ -20,8 +19,10 @@ import com.example.spaceshooterlte.Constants.AppConstants;
 import com.example.spaceshooterlte.R;
 import com.example.spaceshooterlte.Sprites.Background;
 import com.example.spaceshooterlte.Sprites.Bullet;
+import com.example.spaceshooterlte.Sprites.Coin;
 import com.example.spaceshooterlte.Sprites.EnemyBird;
 import com.example.spaceshooterlte.Sprites.Flight;
+import com.example.spaceshooterlte.Sprites.Stone;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,13 +41,17 @@ public class GameView extends SurfaceView implements Runnable {
     Flight flight;
     private List<Bullet> bulletList;
     private EnemyBird[] enemyBird;
+    private Coin[] coins;
+    private Stone[] stones;
     private Random random;
     private Timer timer;
     private SoundPool soundPool;
     private int sound;
+    private int isScoreDeducted=0;
     SharedPreferences sharedPreferences;
     private int flightPointerId = -1;
-
+    private int targetScore; // todo add target in diff levels
+    private boolean isTargetReached = false;
 
     public GameView(Context context, int screenX, int screenY) {
         super(context);
@@ -82,20 +87,36 @@ public class GameView extends SurfaceView implements Runnable {
         bulletList = new ArrayList<>();
 
         flight = new Flight(this, screenY, getResources());
-
         enemyBird = new EnemyBird[4];
+
+        coins = new Coin[3];
+
+        stones = new Stone[3];
 
         timer = new Timer();
 
         paint = new Paint();
         // Adding Score using Paint
         paint.setTextSize(128f);
-        paint.setColor(Color.WHITE);
+        paint.setColor(Color.BLACK);
 
+        // init Birds
         for (int i = 0; i < 4; i++) {
             EnemyBird bird = new EnemyBird(getResources());
             // the ith of the EnemyBird array is = to the Bird Instance
             enemyBird[i] = bird;
+        }
+
+        // init Coins
+        for (int i = 0; i < 3; i++) {
+            Coin coin = new Coin(getResources());
+            coins[i] = coin;
+        }
+
+        // init Stones
+        for (int i = 0; i < 3; i++) {
+            Stone stone = new Stone(getResources());
+            stones[i] = stone;
         }
 
         random = new Random();
@@ -188,11 +209,126 @@ public class GameView extends SurfaceView implements Runnable {
                     bird.birdShot = true;
                 }
             }
+
+            for (Coin coin : coins) {
+                // if coins hit the bullet increase the score
+                if (Rect.intersects(coin.getCollisionBounds(), bullet.getCollisionBounds())) {
+                    // increase the score
+                    if (AppConstants.GAME_LEVEL == 1) {
+                        score += 2;
+                    } else if (AppConstants.GAME_LEVEL == 2) {
+                        score += 4;
+                    } else if (AppConstants.GAME_LEVEL == 3) {
+                        score += 6;
+                    }
+                    // when the coins are hit move em of the screen to respawn them again
+                    coin.x = -400;
+                    // set coin collected true
+                    coin.isCoinCollected = true;
+                }
+            }
         }
 
         // remove bullets from the Trash List too
         for (Bullet bullet : trashList) {
             bulletList.remove(bullet);
+        }
+
+        // spawn the coins
+        for (Coin coin : coins) {
+            // move coins towards the flight
+            coin.x -= coin.coinSpeed;
+
+            // checking if the coin goes out of screen
+            if (coin.x + coin.width < 0) {
+
+                // if coin is missed Game Over
+                if (!coin.isCoinCollected) {
+                    if (AppConstants.GAME_MODE_ID == 2131230968) {
+                        isGameOver = true;
+                    } else if (AppConstants.GAME_MODE_ID == 2131230967) {
+                        isGameOver = false;
+                    }
+                    return;
+                }
+
+                // increase spawn speed of bird
+                int bound = (int) (30 * screenRatioX);
+                coin.coinSpeed = random.nextInt(bound);
+
+                // ensuring the random number does not return 0
+                if (coin.coinSpeed < 10 * screenRatioX) {
+                    coin.coinSpeed = (int) (10 * screenRatioX);
+                }
+                // placing the bird to end of the right side of screen
+                coin.x = (int) screenX;
+                // screenY - height bound cause it might place the bird on Y axis out of the screen
+                coin.y = random.nextInt((int) (screenY - coin.height));
+
+//                 collision detection of coin & flight
+                if (Rect.intersects(coin.getCollisionBounds(), flight.getCollisionBounds())) {
+                    if (AppConstants.GAME_MODE_ID == 2131230968) {
+                        coin.isCoinCollected = false;
+                    } else if (AppConstants.GAME_MODE_ID == 2131230967) {
+                        coin.isCoinCollected = true;
+                    }
+                    return;
+                }
+
+            }
+        }
+
+        // Stone Logic
+        for (Stone stone : stones) {
+            stone.x -= stone.stoneSpeed;
+
+            // handle out of screen case
+            if (stone.x + stone.width < 0) {
+
+                if (!stone.isStoneHit) {
+                    if (AppConstants.GAME_MODE_ID == 2131230968) {
+                        isGameOver = true;
+                    } else if (AppConstants.GAME_MODE_ID == 2131230967) {
+                        isGameOver = false;
+                    }
+                    return;
+                }
+
+                // increase the speed of stone
+                int bound = (int) (25 * screenRatioX);
+                stone.stoneSpeed = random.nextInt(bound);
+
+                // if random value returns 0
+                if (stone.stoneSpeed < 10 * screenRatioX) {
+                    stone.stoneSpeed = (int) (10 * screenRatioX);
+                }
+
+                // placing the stone
+                stone.x = (int) screenX;
+
+                // screenY - height bound cause it might place the bird on Y axis out of the screen
+                stone.y = random.nextInt((int) (screenY - stone.height));
+
+            }
+            if (Rect.intersects(stone.getCollisionBounds(), flight.getCollisionBounds())) {
+                // todo minus logic
+//                if (AppConstants.GAME_LEVEL == 1) {
+//                    if(isScoreDeducted == 0 ) {
+//                        score-=3;
+//                    }
+//                    isScoreDeducted=0;
+//                } else if (AppConstants.GAME_LEVEL == 2) {
+//                    score = score - 3;
+//                } else if (AppConstants.GAME_LEVEL == 3) {
+//                    score = score - 4;
+//                }
+                if(isScoreDeducted == 0  ) {
+                    if(AppConstants.GAME_LEVEL==1) {
+                        isScoreDeducted++;
+                        score -= 3;
+                    }
+                }
+            }
         }
 
         // Enemy Bird logic
@@ -207,7 +343,7 @@ public class GameView extends SurfaceView implements Runnable {
 
                 if (!bird.birdShot) {
                     // bird was not shot and still off the screen
-                    isGameOver = false;
+                    isGameOver = true;
                     return;
                 }
 
@@ -232,12 +368,21 @@ public class GameView extends SurfaceView implements Runnable {
                 bird.x = (int) screenX;
                 // screenY - height bound cause it might place the bird on Y axis out of the screen
                 bird.y = random.nextInt((int) (screenY - bird.height));
-                bird.birdShot = false;
+                if (AppConstants.GAME_MODE_ID == 2131230968) {
+                    bird.birdShot = false;
+                } else if (AppConstants.GAME_MODE_ID == 2131230967) {
+                    bird.birdShot = true;
+                }
             }
 
             // Collision detection and after logic
             if (Rect.intersects(bird.getCollisionBounds(), flight.getCollisionBounds())) {
-                isGameOver = true;
+                if (AppConstants.GAME_MODE_ID == 2131230968) {
+                    isGameOver = true;
+                } else if (AppConstants.GAME_MODE_ID == 2131230967) {
+                    isGameOver = false;
+                    score -= 1000;
+                }
                 return;
             }
 
@@ -254,12 +399,41 @@ public class GameView extends SurfaceView implements Runnable {
                 canvas.drawBitmap(background1.background, background1.x, background1.y, paint);
                 canvas.drawBitmap(background2.background, background2.x, background2.y, paint);
 
-                for (EnemyBird bird : enemyBird) {
-                    canvas.drawBitmap(bird.getBird(), bird.x, bird.y, paint);
+                if (AppConstants.GAME_LEVEL == 1) {
+                    for (EnemyBird bird : enemyBird) {
+                        canvas.drawBitmap(bird.getBird(), bird.x, bird.y, paint);
+                    }
+                    for (Stone stone : stones) {
+                        canvas.drawBitmap(stone.getStone(), stone.x, stone.y, paint);
+                    }
+                }
+                if (AppConstants.GAME_LEVEL == 2) {
+                    for (Coin coin : coins) {
+                        canvas.drawBitmap(coin.getCoin(), coin.x, coin.y, paint);
+                    }
+                    for (Stone stone : stones) {
+                        canvas.drawBitmap(stone.getStone(), stone.x, stone.y, paint);
+                    }
+                }
+                if (AppConstants.GAME_LEVEL == 3) {
+                    for (EnemyBird bird : enemyBird) {
+                        canvas.drawBitmap(bird.getBird(), bird.x, bird.y, paint);
+                    }
+                    for (Coin coin : coins) {
+                        canvas.drawBitmap(coin.getCoin(), coin.x, coin.y, paint);
+                    }
                 }
 
+
                 // drawing the score
-                canvas.drawText(score + "", screenX / 2, 200, paint);
+                // do not display score in negative
+                if (score < 0) {
+                    score = 0;
+                    canvas.drawText(score + "", screenX / 2, 200, paint);
+                } else if (score > 0) {
+                    canvas.drawText(score + "", screenX / 2, 200, paint);
+                }
+
 
                 // if game is over Stop the game
                 if (isGameOver) {
@@ -272,6 +446,7 @@ public class GameView extends SurfaceView implements Runnable {
                     gameExit();
                     return;
                 }
+
 
                 canvas.drawBitmap(flight.getFlight(), flight.x, flight.y, paint);
 
@@ -327,22 +502,6 @@ public class GameView extends SurfaceView implements Runnable {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-//        switch (event.getAction()) {
-//            case MotionEvent.ACTION_DOWN:
-//                // If user taps in the left side of the screen Flight Starts Going Up and Down
-//                if (event.getX() < screenX / 2) {
-//                    flight.isGoingUp = true;
-//                }
-//                break;
-//            case MotionEvent.ACTION_UP:
-//                flight.isGoingUp = false;
-//                // If user taps in the right side of the screen Start Shooting
-//                if (event.getX() > screenX / 2) {
-//                    flight.toShoot += 1;
-//                }
-//                break;
-//
-//        }
         int pointerCount = event.getPointerCount(); // gets the no of fingers on the screen
         // checking if there are any active pointers
         boolean isPointerActive = pointerCount > 0;
