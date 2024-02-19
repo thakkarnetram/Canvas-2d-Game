@@ -13,7 +13,7 @@ import com.example.spaceshooterlte.R;
 public class EnemyBird {
     public int birdSpeed = 20;
     public int x = 0, y, width, height, birdCounter = 1;
-    public boolean birdShot = true;
+    public boolean birdShot = true,isBirdOn=false;
     public Bitmap bird1, bird2, bird3, bird4;
 
     public EnemyBird(Resources resources) {

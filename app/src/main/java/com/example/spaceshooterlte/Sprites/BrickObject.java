@@ -6,23 +6,20 @@ import static com.example.spaceshooterlte.View.GameView.screenRatioY;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Rect;
 
 import com.example.spaceshooterlte.R;
 
-public class Coin {
-    public int x, y, width, height, coinSpeed = 20, coinCounter = 0;
-    public boolean isCoinCollected = true;
-    public Bitmap coin;
+public class BrickObject {
+    public int x, y, width, height, objectSpeed = 20;
+    public boolean isObjectCollected = true, isBrickOn = false;
+    public Bitmap brick;
 
-    public boolean isCoinOn = false;
+    public BrickObject(Resources resources) {
+        brick = BitmapFactory.decodeResource(resources, R.drawable.object);
 
-    public Coin(Resources resources) {
-        coin = BitmapFactory.decodeResource(resources, R.drawable.coin1);
-
-        // resize the coin
-        width = coin.getWidth();
-        height = coin.getHeight();
+        // resize
+        width = brick.getWidth();
+        height = brick.getHeight();
 
         width /= 10;
         height /= 10;
@@ -30,7 +27,7 @@ public class Coin {
         width = (int) (width * screenRatioX);
         height = (int) (height * screenRatioY);
 
-        coin= Bitmap.createScaledBitmap(coin, width, height, false);
+        brick = Bitmap.createScaledBitmap(brick, width, height, false);
 
         y = -height;
     }
