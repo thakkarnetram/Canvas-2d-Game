@@ -30,8 +30,8 @@ public class Flight {
         height = flight1.getHeight();
 
         // reducing the size
-        width /= 4;
-        height /= 4;
+        width /= 3;
+        height /= 3;
 
         width = (int) (width * screenRatioX);
         height = (int) (height * screenRatioY);
@@ -60,7 +60,7 @@ public class Flight {
         // resize the deadFlight
         deadFlight = Bitmap.createScaledBitmap(deadFlight, width, height, false);
 
-        y = screenY / 2;
+        y = screenY-  75;
         x = (int) (64 * screenRatioX);
     }
 

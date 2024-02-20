@@ -28,6 +28,7 @@ public class Nitro {
 
         nitro = Bitmap.createScaledBitmap(nitro, width, height, false);
 
-        y = -height;
+        // initial spawn position
+        x = (int) (screenRatioX - 150);
     }
 }

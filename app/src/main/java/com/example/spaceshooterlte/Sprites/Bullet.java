@@ -6,7 +6,6 @@ import static com.example.spaceshooterlte.View.GameView.screenRatioY;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Rect;
 
 import com.example.spaceshooterlte.R;
 
@@ -17,7 +16,7 @@ public class Bullet {
     public Bullet(Resources resources) {
         bullet = BitmapFactory.decodeResource(resources, R.drawable.bullet);
 
-        // resize the bullet
+        // Resize the bullet
         width = bullet.getWidth();
         height = bullet.getHeight();
 
@@ -28,10 +27,8 @@ public class Bullet {
         height = (int) (height * screenRatioY);
 
         bullet = Bitmap.createScaledBitmap(bullet, width, height, false);
+
     }
 
     // Collision detection
-    public Rect getCollisionBounds() {
-        return new Rect(x, y, x + width, y + height);
-    }
 }

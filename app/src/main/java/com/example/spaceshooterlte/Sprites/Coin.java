@@ -11,7 +11,7 @@ import android.graphics.Rect;
 import com.example.spaceshooterlte.R;
 
 public class Coin {
-    public int x, y, width, height, coinSpeed = 20, coinCounter = 0;
+    public int x, y, width, height, coinSpeed = 25, coinCounter = 0;
     public boolean isCoinCollected = true;
     public Bitmap coin;
 
@@ -32,7 +32,8 @@ public class Coin {
 
         coin= Bitmap.createScaledBitmap(coin, width, height, false);
 
-        y = -height;
+        // initial spawn position
+        x = (int) (screenRatioY -  200);
     }
 
 }

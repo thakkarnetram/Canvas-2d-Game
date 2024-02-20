@@ -30,7 +30,9 @@ public class Stone {
 
         stone1 = Bitmap.createScaledBitmap(stone1, width, height, false);
 
-        y = -height;
+        // initial spawn position
+        x = (int) (screenRatioY -  200);
+
     }
 
 }
