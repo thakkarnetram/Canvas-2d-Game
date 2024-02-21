@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import com.example.spaceshooterlte.Constants.AppConstants;
 import com.example.spaceshooterlte.R;
 
 public class EnemyFlight {
@@ -21,15 +22,15 @@ public class EnemyFlight {
         width = enemyFlight.getWidth();
         height = enemyFlight.getHeight();
 
-        width /= 4;
-        height /= 4;
+        width /= 3;
+        height /= 3;
 
         width = (int) (width * screenRatioX);
         height = (int) (height * screenRatioY);
 
         enemyFlight = Bitmap.createScaledBitmap(enemyFlight, width, height, false);
 
-        x = (int) (screenRatioY - 300);
+        x = (int) (AppConstants.SCREEN_WIDTH + 250);
     }
 
 }

@@ -6,7 +6,9 @@ import static com.example.spaceshooterlte.View.GameView.screenRatioY;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.view.ActionProvider;
 
+import com.example.spaceshooterlte.Constants.AppConstants;
 import com.example.spaceshooterlte.R;
 
 public class BrickObject {
@@ -29,7 +31,7 @@ public class BrickObject {
 
         brick = Bitmap.createScaledBitmap(brick, width, height, false);
 
-        y = -height;
+        x = (int) (AppConstants.SCREEN_WIDTH + 100);
     }
 
 }

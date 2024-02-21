@@ -13,6 +13,7 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
@@ -66,6 +67,7 @@ public class GameView extends SurfaceView implements Runnable {
     private boolean isCollided;
     public int boostSpeed = 30;
     public static int gameSpeed = 6;
+    private int prevCollision = -1; //  0 means not yet collided
 
     public GameView(Context context, int screenX, int screenY) {
         super(context);
@@ -150,6 +152,7 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     private void update() {
+        Log.e("ok", "update: Prev - Collision " + prevCollision + " boolean " + isCollided);
         resumeGame();
         if (gameStarted) {
             gameLogic();
@@ -192,37 +195,25 @@ public class GameView extends SurfaceView implements Runnable {
         }
     }
 
+
     private void gameLevelObjects() {
-        // todo remove false spawning objects not needed
         switch (AppConstants.GAME_LEVEL) {
             case 1:
                 for (EnemyBird enemyBird : enemyBird) {
-                    enemyBird.isBirdOn = true;
+                    enemyBird.isBirdOn = false;
                 }
-                brickObject.isBrickOn = false;
                 coin.isCoinOn = true;
                 stone.isStoneOn = true;
-                nitro.isNitroOn=true;
-                enemyFlight.isEnemyFlightOn=true;
                 break;
             case 2:
                 stone.isStoneOn = true;
-                brickObject.isBrickOn = true;
-                coin.isCoinOn = true;
                 nitro.isNitroOn = true;
                 enemyFlight.isEnemyFlightOn = true;
-                for (EnemyBird enemyBird : enemyBird) {
-                    enemyBird.isBirdOn = false;
-                }
                 break;
             case 3:
-                for (EnemyBird enemyBird : enemyBird) {
-                    enemyBird.isBirdOn = true;
-                }
-                nitro.isNitroOn = true;
-                coin.isCoinOn = false;
-                stone.isStoneOn = false;
-                brickObject.isBrickOn = false;
+                brickObject.isBrickOn = true;
+                coin.isCoinOn = true;
+                stone.isStoneOn = true;
                 break;
         }
     }
@@ -397,9 +388,12 @@ public class GameView extends SurfaceView implements Runnable {
 
         }
         isCollided = collisionDetection.isCollisionDetected(stone.stone1, stone.x, stone.y, flight.getFlight(), flight.x, flight.y);
-        if (isCollided) {
+        if (isCollided && prevCollision != 1) {
+            score -= 1; // Reduce score by 1 only when a collision occurs for the first time
+            gameOverLogic();
+            stone.x = -500;
+            stone.isStoneHit = true;
         }
-
     }
 
     private void enemyBirdLogic() {
@@ -450,18 +444,17 @@ public class GameView extends SurfaceView implements Runnable {
             isCollided = collisionDetection.isCollisionDetected(bird.getBird(), bird.x, bird.y, flight.getFlight(), flight.x, flight.y);
             if (isCollided) {
                 gameOverLogic();
-                return;
+                prevCollision = 1;
             }
-
         }
     }
 
     private void brickObjectLogic() {
         // Brick spawning
-        brickObject.x -= brickObject.objectSpeed;
+        brickObject.y += brickObject.objectSpeed;
 
         // out of screen check
-        if (brickObject.x + brickObject.width < 0) {
+        if (brickObject.y > screenY) {
             if (!brickObject.isObjectCollected) {
                 gameOverLogic();
                 return;
@@ -473,17 +466,14 @@ public class GameView extends SurfaceView implements Runnable {
                 brickObject.objectSpeed = (int) (10 * screenRatioX);
             }
             // placing the brick to end of the right side of screen
-            brickObject.x = (int) screenX;
+            brickObject.y = -brickObject.height;
+            brickObject.x = random.nextInt((int) (screenX - brickObject.width));
 
-            // screenY - height bound cause it might place the bird on Y axis out of the screen
-            // brickObject.y = random.nextInt((int) (screenY - brickObject.height));
-            int maxYBound = (int) (screenY - brickObject.height);
-
-            // Check if the maximum Y bound is positive
-            if (maxYBound > 0) {
-                brickObject.y = random.nextInt(maxYBound);
-            } else {
-                brickObject.y = 0; // Set it to the top of the screen
+            // collision
+            isCollided = CollisionDetection.isCollisionDetected(brickObject.brick, brickObject.x, brickObject.y, flight.getFlight(), flight.x, flight.y);
+            if (isCollided) {
+                gameOverLogic();
+                prevCollision = 1;
             }
         }
     }
@@ -508,6 +498,9 @@ public class GameView extends SurfaceView implements Runnable {
             // place the nitro at a random position at the top of the screen
             nitro.y = -nitro.height;
             nitro.x = random.nextInt((int) (screenX - nitro.width));
+
+            // todo collision of nitro & flight
+
         }
     }
 
@@ -516,7 +509,7 @@ public class GameView extends SurfaceView implements Runnable {
         enemyFlight.y += enemyFlight.enemyFlightSpeed;
 
         // out of screen handle
-        if (enemyFlight.y > + screenY) {
+        if (enemyFlight.y > +screenY) {
             if (!enemyFlight.isEnemyFlightHit) {
                 if (AppConstants.GAME_MODE_ID == 2131230968) {
                     isGameOver = true;
@@ -533,6 +526,13 @@ public class GameView extends SurfaceView implements Runnable {
             // place the enemy flight at a random position at the top of the screen
             enemyFlight.y = -enemyFlight.height;
             enemyFlight.x = random.nextInt((int) (screenX - enemyFlight.width));
+
+            isCollided = CollisionDetection.isCollisionDetected(flight.getFlight(), flight.x, flight.y, enemyFlight.enemyFlight, enemyFlight.x, enemyFlight.y);
+            prevCollision = 0;
+            if (isCollided) {
+                gameOverLogic();
+                prevCollision = 1;
+            }
         }
     }
 
@@ -546,16 +546,9 @@ public class GameView extends SurfaceView implements Runnable {
             if (canvas != null) {
 
                 background1.draw(canvas);
-//                canvas.drawBitmap(background2.background, background2.x, background2.y, paint);
-//                if((background2.y + boostSpeed + 2 ) > -1) {
-//                    background2.y = (int) -(background2.getHeight() - (AppConstants.SCREEN_HEIGHT));
-//
-//                }
-
                 if (stone.isStoneOn) {
                     canvas.drawBitmap(stone.stone1, stone.x, stone.y, paint);
                 }
-
 
                 if (brickObject.isBrickOn) {
                     canvas.drawBitmap(brickObject.brick, brickObject.x, brickObject.y, paint);

@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
+import com.example.spaceshooterlte.Constants.AppConstants;
 import com.example.spaceshooterlte.R;
 
 public class EnemyBird {
@@ -37,7 +38,7 @@ public class EnemyBird {
         bird3 = Bitmap.createScaledBitmap(bird3, width, height, false);
         bird4 = Bitmap.createScaledBitmap(bird4, width, height, false);
 
-        y = -height;
+        x = (int) (AppConstants.SCREEN_WIDTH + 100);
     }
 
     public Bitmap getBird() {

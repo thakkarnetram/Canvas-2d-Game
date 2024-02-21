@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
+import com.example.spaceshooterlte.Constants.AppConstants;
 import com.example.spaceshooterlte.R;
 
 public class Stone {
@@ -31,7 +32,7 @@ public class Stone {
         stone1 = Bitmap.createScaledBitmap(stone1, width, height, false);
 
         // initial spawn position
-        x = (int) (screenRatioY -  200);
+        x = (int) (AppConstants.SCREEN_WIDTH + 120);
 
     }
 

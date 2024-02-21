@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
+import com.example.spaceshooterlte.Constants.AppConstants;
 import com.example.spaceshooterlte.View.GameView;
 import com.example.spaceshooterlte.R;
 
@@ -60,8 +61,7 @@ public class Flight {
         // resize the deadFlight
         deadFlight = Bitmap.createScaledBitmap(deadFlight, width, height, false);
 
-        y = screenY-  75;
-        x = (int) (64 * screenRatioX);
+        y = (int) (AppConstants.SCREEN_HEIGHT  -  100);
     }
 
     public Bitmap getFlight() {

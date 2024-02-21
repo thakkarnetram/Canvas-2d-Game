@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import com.example.spaceshooterlte.Constants.AppConstants;
 import com.example.spaceshooterlte.R;
 
 public class Nitro {
@@ -29,6 +30,6 @@ public class Nitro {
         nitro = Bitmap.createScaledBitmap(nitro, width, height, false);
 
         // initial spawn position
-        x = (int) (screenRatioX - 150);
+        x = (int) (AppConstants.SCREEN_WIDTH + 140);
     }
 }
