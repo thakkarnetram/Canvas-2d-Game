@@ -3,6 +3,7 @@ package com.example.spaceshooterlte.Activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -13,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.spaceshooterlte.Constants.AppConstants;
 import com.example.spaceshooterlte.R;
+import com.example.spaceshooterlte.View.GameView;
 
 public class GameOver extends AppCompatActivity {
 
@@ -44,6 +46,8 @@ public class GameOver extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(GameOver.this, GameActivity.class);
+                GameView.score= -1;
+                Log.e("score", "onClick: " + GameView.score + " Target Score  " + GameView.targetScore);
                 startActivity(intent);
                 finish();
             }

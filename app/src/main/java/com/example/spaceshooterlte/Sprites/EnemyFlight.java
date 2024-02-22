@@ -33,4 +33,8 @@ public class EnemyFlight {
         x = (int) (AppConstants.SCREEN_WIDTH + 250);
     }
 
+    public Bitmap getEnemyFlight(){
+        return enemyFlight;
+    }
+
 }
