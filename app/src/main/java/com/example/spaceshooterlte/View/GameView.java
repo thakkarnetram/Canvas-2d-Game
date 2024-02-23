@@ -7,11 +7,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
@@ -45,7 +45,7 @@ public class GameView extends SurfaceView implements Runnable {
     public static int targetScore;
     public static boolean isTargetReached = false;
     public static float screenRatioX, screenRatioY;
-    private Paint paint;
+    private Paint paint, nitro1, nitro2;
     public Background background1;
     public Flight flight;
     public static BrickObject brickObject;
@@ -68,7 +68,7 @@ public class GameView extends SurfaceView implements Runnable {
     public int boostSpeed = 30;
     public static int gameSpeed = 6;
     public int nitroCounter = -1;
-    public int maxNitroSpeed = 500;
+    public int maxNitroSpeed = 900;
 
     public GameView(Context context, int screenX, int screenY) {
         super(context);
@@ -121,6 +121,8 @@ public class GameView extends SurfaceView implements Runnable {
         collisionDetection = new CollisionDetection();
 
         paint = new Paint();
+        nitro1 = new Paint();
+        nitro2 = new Paint();
         // Adding Score using Paint
         paint.setTextSize(60f);
         paint.setColor(Color.BLACK);
@@ -258,8 +260,18 @@ public class GameView extends SurfaceView implements Runnable {
             // nitro and bullet logic
             isCollided = collisionDetection.isCollisionDetected(bullet.bullet, bullet.x, bullet.y, nitro.nitro, nitro.x, nitro.y);
             if (isCollided) {
+                if (nitroCounter == -1) {
+                    activateNitro();
+                } else if (nitroCounter > 0) {
+                    if (nitroCounter > 1000) {
+                        nitroCounter = 1000;
+                    } else {
+                        nitroCounter += 100;
+                    }
+                }
+                score += 5;
+                AppConstantMethods.gameOverLogic();
                 nitro.x = -500;
-                nitro.x = (int) (screenX + 700);
                 nitro.isNitroCollected = true;
             }
         }
@@ -442,8 +454,8 @@ public class GameView extends SurfaceView implements Runnable {
             if (nitroCounter == -1) {
                 activateNitro();
             } else if (nitroCounter > 0) {
-                if (nitroCounter > 400) {
-                    nitroCounter = 500;
+                if (nitroCounter > 1000) {
+                    nitroCounter = 1000;
                 } else {
                     nitroCounter += 100;
                 }
@@ -475,6 +487,27 @@ public class GameView extends SurfaceView implements Runnable {
         gameSpeed -= boostSpeed;
         background1.setVector(gameSpeed);
         nitroCounter--;
+    }
+
+    private void drawNitro(Canvas canvas){
+        float offsetX = AppConstants.SCREEN_WIDTH * 0.101f;
+        float offsetY = AppConstants.SCREEN_HEIGHT * 0.079f;
+        float height = AppConstants.SCREEN_HEIGHT * 0.06f;
+        float width =  AppConstants.SCREEN_WIDTH * 0.50f;
+        RectF dstRect1 = new RectF(offsetX, offsetY,
+                (offsetX + width + (AppConstants.SCREEN_WIDTH  * 0.05f)),
+                (offsetY + height));
+        nitro1.setStrokeWidth(10);
+        nitro1.setColor(Color.TRANSPARENT);
+        nitro1.setStyle(Paint.Style.STROKE);
+        nitro1.setColor(Color.WHITE);
+        canvas.drawRoundRect(dstRect1, 200, 200, nitro1);
+        nitro1.setStrokeWidth(10);
+        nitro2.setColor(Color.WHITE);
+        RectF dstRect2 = new RectF(offsetX, offsetY,
+                (offsetX + nitroCounter + (AppConstants.SCREEN_WIDTH  * 0.05f)),
+                (offsetY + height));
+        canvas.drawRoundRect(dstRect2, 200, 200, nitro2);
     }
 
     private void enemyFlightLogic() {
@@ -540,13 +573,13 @@ public class GameView extends SurfaceView implements Runnable {
                     canvas.drawBitmap(nitro.nitro, nitro.x, nitro.y, paint);
                 }
                 if (score < 1) {
-                    canvas.drawText("Score : " + -1 + "", (int) (screenX / 2.3), 130, paint);
+                    canvas.drawText("Score : " + -1 + "", (int) (screenX/1.2), 100, paint);
                 } else {
-                    canvas.drawText("Score : " + score + "", (int) (screenX / 2.3), 130, paint);
+                    canvas.drawText("Score : " + score + "", (int) (screenX / 1.2), 100, paint);
                 }
                 AppConstantMethods.setTargetScore(AppConstants.GAME_LEVEL);
-                canvas.drawText("Target Score " + targetScore + "", (int) (screenX / 2.6), 220, paint);
-
+                canvas.drawText("Target Score " + targetScore + "", (int) (screenX / 1.35), 185, paint);
+                drawNitro(canvas);
                 // if game is over Stop the game
                 if (isGameOver) {
                     // this would exit the thread

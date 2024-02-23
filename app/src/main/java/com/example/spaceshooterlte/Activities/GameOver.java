@@ -20,7 +20,6 @@ public class GameOver extends AppCompatActivity {
 
     Button btnRestartGame, btnStart;
     TextView tvHighScore;
-
     ImageButton ibHomeBtn;
 
     @Override
@@ -47,7 +46,6 @@ public class GameOver extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(GameOver.this, GameActivity.class);
                 GameView.score= -1;
-                Log.e("score", "onClick: " + GameView.score + " Target Score  " + GameView.targetScore);
                 startActivity(intent);
                 finish();
             }
@@ -64,6 +62,7 @@ public class GameOver extends AppCompatActivity {
                 startActivity(intent);
                 AppConstants.EXITED = 1;
                 AppConstants.IS_LEVEL_SELECTED = false;
+                GameView.score= -1;
                 finish();
             }
         });

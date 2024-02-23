@@ -34,12 +34,14 @@ public class AppConstantMethods {
             case 2:
                 GameView.stone.isStoneOn = true;
                 GameView.nitro.isNitroOn = true;
+                GameView.coin.isCoinOn = true;
                 GameView.enemyFlight.isEnemyFlightOn = true;
                 break;
             case 3:
                 GameView.brickObject.isBrickOn = true;
                 GameView.coin.isCoinOn = true;
                 GameView.stone.isStoneOn = true;
+                GameView.nitro.isNitroOn = true;
                 break;
         }
     }
@@ -100,6 +102,7 @@ public class AppConstantMethods {
             GameView.isGameOver = true;
         }
     }
+
 
     public static Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
         int width = bm.getWidth();
